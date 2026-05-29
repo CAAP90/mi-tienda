@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Variedades y Chucherías Garabato – Todo en un solo lugar</title>
+  <link rel="stylesheet" href="css/estilos.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="header-inner">
+     <a class="logo" href="#">
+    <img src="imagen/logo.png" alt="Logo" class="hero-logo-img">
+    <div class="logo-text">
+        <span class="logo-nombre">Garabato</span>
+        <span class="logo-sub">Variedades & Chucherías</span>
+    </div>
+  </a>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Buscar productos..." />
+        <button onclick="buscar()">🔍</button>
+      </div>
+      <div class="header-actions">
+        <button class="btn-login" onclick="abrirLogin()">👤 Ingresar</button>
+        <button class="btn-cart" onclick="abrirCarrito()">🛒 <span id="cartCount">0</span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO CON LOGO GRANDE -->
+  <section class="hero">
+    <div class="hero-logo-grande">
+      <img src="imagen/logo.png" alt="Logo" class="hero-logo-img">
+      <h1 class="hero-logo-titulo">Variedades & Chucherías</h1>
+      <p class="hero-logo-slogan">Garabato</p>
+    </div>
+    <div class="hero-content">
+      <p class="hero-tag">🔥 Ofertas de temporada</p>
+      <p class="hero-desc">Ropa, hogar, electrónica y mucho más con los mejores precios.</p>
+      <a href="#productos" class="btn-primary">Ver productos</a>
+    </div>
+  </section>
+
+  <!-- CATEGORÍAS -->
+  <section class="categorias" id="categorias">
+    <h2 class="section-title">Explora por categoría</h2>
+    <div class="cat-grid">
+      <div class="cat-card" id="cat-ropa" onclick="filtrarCategoria('ropa', this)">👗<span>Ropa</span></div>
+      <div class="cat-card" id="cat-hogar" onclick="filtrarCategoria('hogar', this)">🛋️<span>Hogar</span></div>
+      <div class="cat-card" id="cat-electronica" onclick="filtrarCategoria('electronica', this)">📱<span>Electrónica</span></div>
+      <div class="cat-card" id="cat-deportes" onclick="filtrarCategoria('deportes', this)">⚽<span>Deportes</span></div>
+      <div class="cat-card" id="cat-belleza" onclick="filtrarCategoria('belleza', this)">💄<span>Belleza</span></div>
+      <div class="cat-card" id="cat-juguetes" onclick="filtrarCategoria('juguetes', this)">🧸<span>Juguetes</span></div>
+      <div class="cat-card cat-todos" id="cat-todos" onclick="filtrarCategoria('todos', this)">🏪<span>Ver todos</span></div>
+    </div>
+  </section>
+
+  <!-- FILTROS -->
+  <section class="filtros" id="productos">
+    <div class="filtros-inner">
+      <h2 class="section-title" id="tituloSeccion">Nuestros productos</h2>
+      <div class="filtros-controles">
+        <select id="filtroPrecio" onchange="aplicarFiltros()">
+          <option value="todos">💲 Precio: Todos</option>
+          <option value="0-50000">Menos de $50.000</option>
+          <option value="50000-100000">$50.000 – $100.000</option>
+          <option value="100000-999999">Más de $100.000</option>
+        </select>
+        <select id="filtroCategoria" onchange="aplicarFiltros()">
+          <option value="todos">📦 Categoría: Todas</option>
+          <option value="ropa">Ropa</option>
+          <option value="hogar">Hogar</option>
+          <option value="electronica">Electrónica</option>
+          <option value="deportes">Deportes</option>
+          <option value="belleza">Belleza</option>
+          <option value="juguetes">Juguetes</option>
+        </select>
+        <select id="filtroOrden" onchange="aplicarFiltros()">
+          <option value="default">🔀 Ordenar</option>
+          <option value="az">A – Z</option>
+          <option value="za">Z – A</option>
+          <option value="menorprecio">Menor precio</option>
+          <option value="mayorprecio">Mayor precio</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- GRID DE PRODUCTOS -->
+    <div class="productos-grid" id="productosGrid"></div>
+  </section>
+
+  <!-- MODAL DETALLE PRODUCTO -->
+  <div class="modal-overlay" id="modalProductoOverlay" onclick="cerrarProducto()"></div>
+  <div class="modal modal-producto" id="modalProducto">
+    <button class="modal-close" onclick="cerrarProducto()">✕</button>
+    <div class="producto-detalle-icono" id="detalle-icono"></div>
+    <h2 id="detalle-nombre"></h2>
+    <p class="detalle-categoria" id="detalle-categoria"></p>
+    <div class="detalle-precio-wrap">
+      <span class="precio detalle-precio" id="detalle-precio"></span>
+      <span class="precio-old" id="detalle-precio-old"></span>
+    </div>
+    <p class="detalle-desc" id="detalle-desc"></p>
+    <button class="btn-primary detalle-btn" id="detalle-btn-agregar">🛒 Agregar al carrito</button>
+  </div>
+
+  <!-- CARRITO (panel lateral) -->
+  <div class="carrito-overlay" id="carritoOverlay" onclick="cerrarCarrito()"></div>
+  <div class="carrito-panel" id="carritoPanel">
+    <div class="carrito-header">
+      <h3>🛒 Tu carrito</h3>
+      <button onclick="cerrarCarrito()">✕</button>
+    </div>
+    <div class="carrito-items" id="carritoItems">
+      <p class="carrito-vacio">Tu carrito está vacío</p>
+    </div>
+    <div class="carrito-footer">
+      <p>Total: <strong id="carritoTotal">$0</strong></p>
+      <button class="btn-primary">Finalizar compra</button>
+    </div>
+  </div>
+
+  <!-- MODAL LOGIN -->
+  <div class="modal-overlay" id="modalOverlay" onclick="cerrarLogin()"></div>
+  <div class="modal" id="modalLogin">
+    <button class="modal-close" onclick="cerrarLogin()">✕</button>
+    <h3>Bienvenido</h3>
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="cambiarTab('login', this)">Ingresar</button>
+      <button class="modal-tab" onclick="cambiarTab('registro', this)">Registrarse</button>
+    </div>
+    <div id="formLogin">
+      <input type="email" placeholder="Correo electrónico" />
+      <input type="password" placeholder="Contraseña" />
+      <button class="btn-primary">Ingresar</button>
+    </div>
+    <div id="formRegistro" style="display:none">
+      <input type="text" placeholder="Nombre completo" />
+      <input type="email" placeholder="Correo electrónico" />
+      <input type="password" placeholder="Contraseña" />
+      <button class="btn-primary">Crear cuenta</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <a class="logo" href="#">
+          <span class="logo-nombre footer-logo-nombre">Garabato</span>
+        </a>
+        <p>Tu marketplace de confianza.</p>
+      </div>
+      <div>
+        <h5>Categorías</h5>
+        <ul>
+          <li><a href="#">Ropa</a></li>
+          <li><a href="#">Hogar</a></li>
+          <li><a href="#">Electrónica</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Ayuda</h5>
+        <ul>
+          <li><a href="#">Envíos</a></li>
+          <li><a href="#">Devoluciones</a></li>
+          <li><a href="#">Contacto</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="footer-copy">© 2025 Variedades y Chucherías Garabato – Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</html>
