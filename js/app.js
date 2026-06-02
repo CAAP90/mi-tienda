@@ -1,4 +1,7 @@
-/// ===== PRODUCTOS =====
+// ===== WHATSAPP =====
+const WHATSAPP_NUM = '573224178831';
+
+// ===== PRODUCTOS =====
 const productos = [
   { id:1,  nombre:"Vestido Floral",         categoria:"ropa",         precio:89900,  oferta:true,  icono:"imagen/vestido floral.jpg",        desc:"Hermoso vestido floral ideal para cualquier ocasión. Tela suave y fresca, disponible en varias tallas." },
   { id:2,  nombre:"Camisa Manga Corta",      categoria:"ropa",        precio:45000,  oferta:false, icono:"imagen/Camisa manga corta.jpg",     desc:"Camisa de manga corta fresca y cómoda, perfecta para el día a día. Disponible en varios colores." },
@@ -9,10 +12,10 @@ const productos = [
   { id:7,  nombre:"Samsung Galaxy A36",      categoria:"electronica", precio:980000, oferta:true,  icono:"imagen/Galaxy A36.jpg",             desc:"Pantalla AMOLED 6.7\", cámara de 50 MP, batería de 5000 mAh y Android 14. Garantía 1 año." },
   { id:8,  nombre:"Audífonos Inalámbricos",  categoria:"electronica", precio:75000,  oferta:false, icono:"imagen/audfonos inhalambricos.jpg", desc:"Audífonos inalámbricos con cancelación de ruido, hasta 30h de batería y sonido envolvente." },
   { id:9,  nombre:"Tablet Lya",              categoria:"electronica", precio:650000, oferta:true,  icono:"imagen/Tablet Lya.jpg",             desc:"Tablet de 10\" con procesador octa-core, 4GB RAM, 64GB almacenamiento y pantalla Full HD." },
-  { id:10, nombre:"Balón de Fútbol",         categoria:"deportes",    precio:38000,  oferta:false, icono:"imagen/Balon de futbol.jpg",         desc:"Balón de cuero sintético talla 5, ideal para canchas de grama o sintético. Alta durabilidad." },
-  { id:11, nombre:"Guantes de Box",          categoria:"deportes",    precio:55000,  oferta:true,  icono:"imagen/Guantes de box.jpg",          desc:"Guantes de boxeo en cuero sintético reforzado. Disponibles en 10 y 12 onzas. Incluye velcro." },
-  { id:12, nombre:"Crema Hidratante",        categoria:"belleza",     precio:28000,  oferta:false, icono:"imagen/Creama hidratante.jpg",       desc:"Crema hidratante de uso diario con vitamina E y aloe vera. Para todo tipo de piel, 250ml." },
-  { id:13, nombre:"Set de Maquillaje",       categoria:"belleza",     precio:95000,  oferta:true,  icono:"imagen/Set maquillaje.jpg",          desc:"Kit completo con base, sombras, labial y delineador. Larga duración y acabado profesional." },
+  { id:10, nombre:"Balón de Fútbol",         categoria:"deportes",    precio:38000,  oferta:false, icono:"imagen/Balon de futbol.jpg",        desc:"Balón de cuero sintético talla 5, ideal para canchas de grama o sintético. Alta durabilidad." },
+  { id:11, nombre:"Guantes de Box",          categoria:"deportes",    precio:55000,  oferta:true,  icono:"imagen/Guantes de box.jpg",         desc:"Guantes de boxeo en cuero sintético reforzado. Disponibles en 10 y 12 onzas. Incluye velcro." },
+  { id:12, nombre:"Crema Hidratante",        categoria:"belleza",     precio:28000,  oferta:false, icono:"imagen/Creama hidratante.jpg",      desc:"Crema hidratante de uso diario con vitamina E y aloe vera. Para todo tipo de piel, 250ml." },
+  { id:13, nombre:"Set de Maquillaje",       categoria:"belleza",     precio:95000,  oferta:true,  icono:"imagen/Set maquillaje.jpg",         desc:"Kit completo con base, sombras, labial y delineador. Larga duración y acabado profesional." },
 ];
 
 // ===== CARRITO =====
@@ -115,18 +118,15 @@ function aplicarFiltros() {
   if (orden === 'mayorprecio') lista.sort((a,b) => b.precio - a.precio);
 
   const titulo = document.getElementById('tituloSeccion');
-  if (categoria !== 'todos') {
-    titulo.textContent = `Productos de ${categoria.charAt(0).toUpperCase() + categoria.slice(1)}`;
-  } else {
-    titulo.textContent = 'Nuestros productos';
-  }
+  titulo.textContent = categoria !== 'todos'
+    ? `Productos de ${categoria.charAt(0).toUpperCase() + categoria.slice(1)}`
+    : 'Nuestros productos';
 
   renderizarProductos(lista);
 }
 
 function buscar() { aplicarFiltros(); }
 
-// ===== FILTRAR POR CATEGORÍA DESDE TARJETAS =====
 function filtrarCategoria(cat, elemento) {
   document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('activa'));
   if (elemento) elemento.classList.add('activa');
@@ -150,6 +150,19 @@ function agregarAlCarrito(id) {
   abrirCarrito();
 }
 
+function eliminarDelCarrito(id) {
+  carrito = carrito.filter(p => p.id !== id);
+  actualizarCarrito();
+}
+
+function cambiarCantidad(id, delta) {
+  const item = carrito.find(p => p.id === id);
+  if (!item) return;
+  item.cantidad += delta;
+  if (item.cantidad <= 0) eliminarDelCarrito(id);
+  else actualizarCarrito();
+}
+
 function actualizarCarrito() {
   const count   = carrito.reduce((acc, p) => acc + p.cantidad, 0);
   const total   = carrito.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
@@ -163,16 +176,39 @@ function actualizarCarrito() {
   } else {
     items.innerHTML = carrito.map(p => `
       <div class="carrito-item">
-        <img src="${p.icono}" alt="${p.nombre}" style="width:45px;height:45px;object-fit:cover;border-radius:8px;">
+        <img src="${p.icono}" alt="${p.nombre}" style="width:45px;height:45px;object-fit:cover;border-radius:8px;flex-shrink:0;">
         <div class="item-info">
           <p>${p.nombre}</p>
-          <span>x${p.cantidad} · $${(p.precio * p.cantidad).toLocaleString()}</span>
+          <span>$${(p.precio * p.cantidad).toLocaleString()}</span>
+        </div>
+        <div class="item-controles">
+          <button onclick="cambiarCantidad(${p.id}, -1)">−</button>
+          <span>${p.cantidad}</span>
+          <button onclick="cambiarCantidad(${p.id}, 1)">+</button>
         </div>
       </div>
     `).join('');
   }
 
   document.getElementById('carritoTotal').textContent = '$' + total.toLocaleString();
+}
+
+// ===== FINALIZAR COMPRA POR WHATSAPP =====
+function finalizarCompra() {
+  if (carrito.length === 0) return;
+
+  const total = carrito.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+  let mensaje = '🛍️ *Hola! Quiero hacer el siguiente pedido:*\n\n';
+
+  carrito.forEach(p => {
+    mensaje += `▪️ ${p.nombre} x${p.cantidad} = $${(p.precio * p.cantidad).toLocaleString()}\n`;
+  });
+
+  mensaje += `\n💰 *Total: $${total.toLocaleString()}*`;
+  mensaje += '\n\n¿Me pueden confirmar disponibilidad y forma de pago? 😊';
+
+  const url = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(mensaje)}`;
+  window.open(url, '_blank');
 }
 
 function abrirCarrito() {
@@ -203,6 +239,21 @@ function cambiarTab(tab, el) {
   document.getElementById('formRegistro').style.display = tab === 'registro' ? 'block' : 'none';
 }
 
+// ===== HEADER SE OCULTA AL HACER SCROLL =====
+let ultimoScroll = 0;
+const headerEl = document.getElementById('header');
+
+window.addEventListener('scroll', () => {
+  const scrollActual = window.pageYOffset;
+  if (scrollActual > ultimoScroll && scrollActual > 100) {
+    headerEl.style.transform = 'translateY(-100%)';
+    headerEl.style.transition = 'transform 0.3s ease';
+  } else {
+    headerEl.style.transform = 'translateY(0)';
+    headerEl.style.transition = 'transform 0.3s ease';
+  }
+  ultimoScroll = scrollActual;
+});
+
 // ===== INICIO =====
 renderizarProductos(productos);
-
